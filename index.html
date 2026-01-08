@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CollabVault ER Diagram</title>
+
+  <!-- Mermaid -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+    }
+
+    header {
+      padding: 20px;
+      text-align: center;
+      background: #020617;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+      color: #38bdf8;
+    }
+
+    header p {
+      margin-top: 6px;
+      color: #94a3b8;
+    }
+
+    .container {
+      padding: 30px;
+      overflow-x: auto;
+    }
+
+    .mermaid {
+      background: #020617;
+      padding: 20px;
+      border-radius: 12px;
+      min-width: 1200px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 12px;
+      font-size: 14px;
+      color: #64748b;
+      border-top: 1px solid #1e293b;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>CollabVault – ER Diagram</h1>
+  <p>Relational Database Design for Student Collaboration Platform</p>
+</header>
+
+<div class="container">
+  <div class="mermaid">
+erDiagram
+
+USERS {
+  int id PK
+  varchar email
+  varchar phone
+  text password_hash
+  tinyint email_verified
+  tinyint phone_verified
+  enum role
+  tinyint is_blocked
+  timestamp created_at
+}
+
+PROFILES {
+  int user_id PK
+  varchar display_name
+  varchar college
+  varchar branch
+  varchar year
+  text bio
+  varchar username_slug
+}
+
+SKILLS {
+  int id PK
+  varchar name
+}
+
+INTERESTS {
+  int id PK
+  varchar name
+}
+
+USER_SKILLS {
+  int user_id PK
+  int skill_id PK
+  int proficiency
+}
+
+USER_INTERESTS {
+  int user_id PK
+  int interest_id PK
+}
+
+POSTS {
+  int id PK
+  int creator_id FK
+  varchar title
+  text description
+  int team_size
+  date deadline
+  tinyint is_open
+}
+
+POST_LIKES {
+  int user_id PK
+  int post_id PK
+}
+
+COMMENTS {
+  int id PK
+  int post_id FK
+  int user_id FK
+  text content
+}
+
+CONNECTIONS {
+  int id PK
+  int user_id FK
+  int target_user_id FK
+}
+
+TEAMS {
+  int id PK
+  int post_id FK
+  varchar name
+  int leader_user FK
+  varchar status
+}
+
+TEAM_MEMBERS {
+  int team_id PK
+  int user_id PK
+  varchar role
+  tinyint is_lead
+}
+
+TEAM_GROUPS {
+  int id PK
+  varchar name
+  int created_by FK
+}
+
+TEAM_GROUP_MEMBERS {
+  int id PK
+  int group_id FK
+  int user_id FK
+}
+
+TEAM_MESSAGES {
+  int id PK
+  int group_id FK
+  int sender_id FK
+  text content
+}
+
+MESSAGES {
+  int id PK
+  int sender_id FK
+  int receiver_id FK
+  text content
+}
+
+FEEDBACK {
+  bigint id PK
+  int user_id FK
+  varchar subject
+  text message
+  enum status
+}
+
+ALLOWED_DOMAINS {
+  int id PK
+  varchar domain
+  varchar display_name
+}
+
+USERS ||--|| PROFILES : has
+USERS ||--o{ POSTS : creates
+POSTS ||--o{ COMMENTS : has
+USERS ||--o{ COMMENTS : writes
+USERS ||--o{ POST_LIKES : likes
+POSTS ||--o{ POST_LIKES : liked_by
+
+USERS ||--o{ CONNECTIONS : connects
+USERS ||--o{ USER_SKILLS : has
+SKILLS ||--o{ USER_SKILLS : mapped
+USERS ||--o{ USER_INTERESTS : has
+INTERESTS ||--o{ USER_INTERESTS : mapped
+
+POSTS ||--o{ TEAMS : forms
+TEAMS ||--o{ TEAM_MEMBERS : contains
+USERS ||--o{ TEAM_MEMBERS : joins
+
+TEAM_GROUPS ||--o{ TEAM_GROUP_MEMBERS : has
+USERS ||--o{ TEAM_GROUP_MEMBERS : joins
+TEAM_GROUPS ||--o{ TEAM_MESSAGES : contains
+USERS ||--o{ TEAM_MESSAGES : sends
+
+USERS ||--o{ MESSAGES : sends
+USERS ||--o{ FEEDBACK : submits
+ALLOWED_DOMAINS ||--o{ USERS : verifies
+  </div>
+</div>
+
+<footer>
+  © 2026 CollabVault | Database & ER Design by Laasya Nagamalli
+</footer>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: "dark"
+  });
+</script>
+
+</body>
+</html>
